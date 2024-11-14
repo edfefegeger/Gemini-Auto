@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # Проверка количества переданных аргументов
 if len(sys.argv) < 6:
-    print("Использование: python gemini.py <api_key> <promt> <trascript> <model_name> <output_file_path> <proxy>")
+    print("Использование: python gemini.py <api_key> <promt> <trascript> <output_file_path> <proxy> <model_name>")
     sys.exit(1)
 
 # Получение аргументов
@@ -21,6 +21,13 @@ file_path_or_url = sys.argv[3]  # Путь к изображению или те
 output_file_path = sys.argv[4]  # Путь для сохранения результата
 proxy = sys.argv[5]             # Прокси
 model_name = sys.argv[6]        # Имя модели
+
+
+f = open(promt)
+promt_res = f.read()
+
+c = open(file_path_or_url)
+user_mes = c.read()
 
 # Установка прокси
 proxies = {
@@ -80,7 +87,7 @@ try:
         # else:
         #     print("Произошла ошибка: ", response.text)
         # Загружаем текст из файла или URL
-        user_message = file_path_or_url
+        user_message = user_mes
 
         # Конфигурация API
         genai.configure(api_key=api_key)
@@ -97,7 +104,7 @@ try:
         model = genai.GenerativeModel(
             model_name=model_name,  # Используем переданное имя модели
             generation_config=generation_config,
-            system_instruction="Ты — ассистент, отвечающий только простым текстом без форматирования. Увеличьте количество символов на 10%, чтобы текст стал более содержательным и увлекательным, сохраняя оригинальный смысл и стиль. Переведите текст на русский язык. Разбей текст на короткие, смысловые абзацы, каждый из которых посвящен одной законченной мысли или идее. Соблюдай правила пунктуации и грамматики.Формат ответа:АбзацАбзацАбзацАбзац (и так далее, по необходимости)",
+            system_instruction=promt_res,
         )
 
         # Запуск сессии чата
