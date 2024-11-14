@@ -1,5 +1,6 @@
 import os
 import sys
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
 import google.generativeai as genai
 import requests
 import logging
@@ -63,7 +64,7 @@ generation_config = {
     "temperature": 1.2,
     "top_p": 0.95,
     "top_k": 64,
-    "max_output_tokens": 8192,
+    "max_output_tokens": 30000,
     "response_mime_type": "text/plain",
 }
 
@@ -71,6 +72,7 @@ model = genai.GenerativeModel(
     model_name=model_name,  # Используем переданное имя модели
     generation_config=generation_config,
     system_instruction=system_instruction,
+    
 )
 
 # Запуск сессии чата
@@ -78,7 +80,16 @@ chat_session = model.start_chat(history=[])
 
 # Отправка сообщения и вывод ответа
 try:
-    response = chat_session.send_message(user_message)
+    response = model.generate_content(
+    [user_message],
+    safety_settings={
+        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE
+    }
+
+)
     result_text = response.text
 
     # Сохранение результата в указанный файл
