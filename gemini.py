@@ -93,8 +93,8 @@ try:
     result_text = response.text
 
     # Сохранение результата в указанный файл
-    with open(output_file_path, 'w', encoding='utf-8') as output_file:
-        output_file.write(result_text)
+    with open(output_file_path, 'a', encoding='utf-8') as output_file:
+        output_file.write(result_text + "\n" + "\n")
     
     print(f"Результат успешно сохранён в файл: {output_file_path}")
     print(f"Ответ: {result_text}")  # Выводим ответ на экран
